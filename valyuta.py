@@ -35,3 +35,18 @@ def convert_money(message):
         bot.send_message(message.chat.id, "Xatolik yuz berdi. Iltimos qaytadan urinib ko'ring.")
 
 bot.polling(none_stop=True)
+import os
+from flask import Flask
+from threading import Thread
+
+app = Flask('')
+
+@app.route('/')
+def home():
+    return "Bot ishlamoqda!"
+
+def run():
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host='0.0.0.0', port=port)
+
+Thread(target=run).start()
