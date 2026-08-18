@@ -19,7 +19,7 @@ def run():
 Thread(target=run).start()
 
 # 2. Telegram Bot sozlamalari
-TOKEN = "https://cbu.uz/uz/arkhiv-kursov-valyut/json/"
+TOKEN = "8772035660:AAEPI673hlAxluh81JGJVseDQafwFNQYLw0"
 bot = telebot.TeleBot(TOKEN)
 
 @bot.message_handler(commands=['start', 'help'])
