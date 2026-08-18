@@ -4,7 +4,6 @@ import telebot
 from flask import Flask
 from threading import Thread
 
-# 1. Flask serveri (Render portni aniqlashi uchun)
 app = Flask('')
 
 @app.route('/')
@@ -15,33 +14,39 @@ def run():
     port = int(os.environ.get("PORT", 10000))
     app.run(host='0.0.0.0', port=port)
 
-# Flask'ni orqa fonda ishga tushirish
 Thread(target=run).start()
 
-# 2. Telegram Bot sozlamalari
 TOKEN = "8772035660:AAEPI673hlAxluh81JGJVseDQafwFNQYLw0"
 bot = telebot.TeleBot(TOKEN)
 
 @bot.message_handler(commands=['start', 'help'])
 def send_welcome(message):
-    bot.reply_to(message, "Salom! Valyuta botiga xush kelibsiz. Valyuta kurslarini bilish uchun /kurs buyrug'ini yuboring.")
+    bot.reply_to(message, "Salom! Summani so'mda kiriting (masalan: 30000 yoki 100000), men uni valyutalarga hisoblab beraman!")
 
-@bot.message_handler(commands=['kurs'])
-def get_rate(message):
+# Har qanday kiritilgan matn va sonlarni hisoblash funksiyasi
+@bot.message_handler(func=lambda message: True)
+def convert_currency(message):
     try:
+        som = float(message.text.replace(" ", ""))
         response = requests.get("https://cbu.uz/uz/arkhiv-kursov-valyut/json/").json()
-        usd = response[0]['Rate']
-        eur = response[1]['Rate']
-        rub = response[2]['Rate']
         
-        text = f"<b>Bugungi valyuta kurslari:</b>\n\n" \
-               f"1 USD = {usd} so'm\n" \
-               f"1 EUR = {eur} so'm\n" \
-               f"1 RUB = {rub} so'm"
+        usd_rate = float(response[0]['Rate'])
+        eur_rate = float(response[1]['Rate'])
+        rub_rate = float(response[2]['Rate'])
+        
+        usd_val = round(som / usd_rate, 2)
+        eur_val = round(som / eur_rate, 2)
+        rub_val = round(som / rub_rate, 2)
+        
+        text = f"💱 <b>{som:,.0f} so'm</b> quyidagiga teng:\n\n" \
+               f"🇺🇸 USD: {usd_val} dollar\n" \
+               f"🇪🇺 EUR: {eur_val} yevro\n" \
+               f"🇷🇺 RUB: {rub_val} rubl"
                
         bot.send_message(message.chat.id, text, parse_mode="HTML")
+    except ValueError:
+        bot.reply_to(message, "Iltimos, faqat raqam kiriting (masalan: 50000).")
     except Exception as e:
-        bot.reply_to(message, "Valyuta kurslarini olishda xatolik yuz berdi.")
+        bot.reply_to(message, "Valyuta kursini olishda xatolik yuz berdi.")
 
-# 3. Botni ishga tushirish (KODNING ENG OXIRIDA BO'LISHI SHART!)
 bot.infinity_polling()
