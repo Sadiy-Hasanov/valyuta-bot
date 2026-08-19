@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Valyuta Konvertori Mini App</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: var(--tg-theme-bg-color, #f4f6f8);
+      color: var(--tg-theme-text-color, #222222);
+      text-align: center;
+    }
+    .card {
+      background: var(--tg-theme-secondary-bg-color, #ffffff);
+      border-radius: 16px;
+      padding: 20px;
+      max-width: 320px;
+      margin: 0 auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    h2 {
+      margin-bottom: 15px;
+      font-size: 20px;
+    }
+    label {
+      display: block;
+      text-align: left;
+      font-size: 14px;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      font-size: 16px;
+      outline: none;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #2481cc;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .results {
+      margin-top: 20px;
+      text-align: left;
+    }
+    .result-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+      font-size: 15px;
+    }
+    .result-item:last-child {
+      border-bottom: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h2>Valyuta Hisoblagich</h2>
+    
+    <label for="uzsAmount">Soʻm miqdorini kiriting:</label>
+    <input type="number" id="uzsAmount" placeholder="Masalan: 1000000" value="100000">
+    
+    <button onclick="calculate()">Hisoblash</button>
+
+    <div class="results">
+      <div class="result-item">
+        <span>AQSh Dollari ($):</span>
+        <strong id="usdResult">0.00 $</strong>
+      </div>
+      <div class="result-item">
+        <span>Yevro (€):</span>
+        <strong id="eurResult">0.00 €</strong>
+      </div>
+      <div class="result-item">
+        <span>Rubl (₽):</span>
+        <strong id="rubResult">0.00 ₽</strong>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    Telegram.WebApp.ready();
+
+    // Taxminiy almashtirish kurslari (1 valyuta necha so'm)
+    const RATES = {
+      USD: 12800, // 1 USD = 12 800 UZS
+      EUR: 13900, // 1 EUR = 13 900 UZS
+      RUB: 140    // 1 RUB = 140 UZS
+    };
+
+    function calculate() {
+      const uzs = parseFloat(document.getElementById('uzsAmount').value);
+
+      if (isNaN(uzs) || uzs <= 0) {
+        document.getElementById('usdResult').innerText = "0.00 $";
+        document.getElementById('eurResult').innerText = "0.00 €";
+        document.getElementById('rubResult').innerText = "0.00 ₽";
+        return;
+      }
+
+      const usd = (uzs / RATES.USD).toFixed(2);
+      const eur = (uzs / RATES.EUR).toFixed(2);
+      const rub = (uzs / RATES.RUB).toFixed(2);
+
+      document.getElementById('usdResult').innerText = usd +"$";
+      document.getElementById('eurResult').innerText = eur +"€";
+      document.getElementById('rubResult').innerText = rub +"₽";
+    }
+
+    // Dastlabki hisoblash
+    calculate();
+  </script>
+</body>
+</html>
